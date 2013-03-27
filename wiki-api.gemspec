@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = Wiki::Api::VERSION
   spec.authors       = ["Dennis Blommesteijn"]
   spec.email         = ["dennis@blommesteijn.com"]
-  spec.description   = %q{MediaWiki API and page parser}
-  spec.summary       = %q{MediaWiki API and page parser}
+  spec.description   = %q{MediaWiki API and parser}
+  spec.summary       = %q{MediaWiki API and parser}
   spec.homepage      = ""
   spec.license       = "MIT"
 
@@ -20,4 +20,10 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "rake"
+
+  # dependencies
+  spec.add_dependency 'nokogiri'
+  spec.add_dependency 'json'
+  spec.add_development_dependency "test-unit"
+
 end
