@@ -29,7 +29,7 @@ class WikiConnect < Test::Unit::TestCase
   def test_page_get
     begin
       c = Wiki::Api::Connect.new
-      c.page "developer"
+      c.page "Wiktionary:Welcome,_newcomers"
     rescue Exception => e
       assert false, "expected valid page #{e.message}"
     end
@@ -43,15 +43,6 @@ class WikiConnect < Test::Unit::TestCase
       assert (e.message == "missingtitle"), "expected invalid page #{e.message}"
     end
   end
-
-  # def test_page_basic
-  #   begin
-  #     c = Wiki::Api::Connect.new uri: "https://en.wiktionary.org"
-  #     response = c.page "developer"
-  #   rescue Exception => e
-  #     assert false, "expected valid page #{e.message}"
-  #   end
-  # end
 
 
 end

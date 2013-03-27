@@ -15,47 +15,43 @@ module Wiki
         self.parsed_page.xpath("//span[@class='mw-headline']")
       end
 
-      def headline_block headline
-        self.parsed_page ||= @connect.page self.name
-        xs = self.parsed_page.xpath("//span[@class='mw-headline']").reject{|t| t.attributes["id"].value != headline }
-        element = xs.first.parent.next
-
-        elements = []
-        # iterate text until next headline
-        while true do
-          elements << element
-          element = element.next
-          break if element.to_html.include? "mw-headline"
-        end
-        elements
-      end
-
-
       def blocks
         self.parsed_page ||= @connect.page self.name
-        xs = self.parsed_page.xpath("//span[@class='mw-headline']").reject{|t| t.attributes["id"].value != headline }
-        raise "not implemented!!!"
-        # elements = {}
-        # self.headlines.each do |headline|
-                  
-        #   elements 
-
-        # end
-        # elements
+        self.parse_blocks self.parsed_page.xpath("//span[@class='mw-headline']")
       end
 
-
-      def connect
-        @connect
+      def headline_block headline_name
+        self.parsed_page ||= @connect.page self.name
+        xs = self.parse_blocks self.parsed_page.xpath("//span[@class='mw-headline']").reject{|t| t.attributes["id"].value != headline_name }
+        return [] if xs.empty?
+        xs.values.flatten
       end
 
-      class << self
-        
-        def to_text element
-          element.map{|t| t.text}
+      def reset!
+        self.parse_page = nil
+      end
+
+      protected
+      def parse_blocks xs
+        result = {}
+        xs.each do |x|
+          # capture first element name
+          headline ||= x.attributes["id"].value
+          element = x.parent.next
+          elements = []
+          # iterate text until next headline
+          while true do
+            elements << element
+            element = element.next
+            break if element.nil? || element.to_html.include?("mw-headline")
+          end
+          h = headline #.downcase.to_sym
+          result[h] ||= [] 
+          result[h] << elements
         end
-
+        result
       end
+
 
     end
 

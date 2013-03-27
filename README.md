@@ -1,29 +1,101 @@
 # Wiki::Api
 
-TODO: Write a gem description
+Wiki API is a gem (Ruby on Rails) that interfaces with the MediaWiki API (https://www.mediawiki.org/wiki/API:Main_page). This gem is more than a interface, it has abstract classes like: Page on which you can request page parameters (like headlines, and text blocks within headlines).
+
+NOTE: nokogiri is used for background parsing of HTML. Because I believe there is no point of wrapping internals (composing) for this purpose, nokogiri nodes elements etc. are exposed (http://nokogiri.org/Nokogiri.html) through the wiki-api.
+
+Requests to the MediaWiki API use the following URI structure:
+
+    http(s)://somemediawiki.org/w/api.php?action=parse&format=json&page="anypage"
+
+
+### Dependencies (production)
+
+* json
+* nokogiri
+
+
+### Roadmap
+
+* Version (0.0.1) (current)
+
+  Initial project.
+
+* Version (0.0.2)
+
+  Auto parsing lists (ul, ol, with li's)
+
+  Auto parsing links (a href)
+
+
+### Known Issues
+
+None discovered thus far.
+
 
 ## Installation
 
-Add this line to your application's Gemfile:
+Add this line to your application's Gemfile (bundler):
 
-    gem 'wiki-api'
+    gem 'wiki-api', git: "git://github.com/dblommesteijn/wiki-api.git"
 
 And then execute:
 
     $ bundle
 
-Or install it yourself as:
+Or install it yourself (RubyGems):
 
     $ gem install wiki-api
 
-## Usage
 
-TODO: Write usage instructions here
+## Setup
 
-## Contributing
+Define a configuration for your connection (initialize script), this example uses wiktionary.org.
+NOTE: it can connect to both HTTP and HTTPS MediaWikis.
 
-1. Fork it
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
+```ruby
+CONFIG = { uri: "http://en.wiktionary.org" }
+```
+
+Setup default configuration (initialize script)
+
+```ruby
+Wiki::Api::Connect.config = CONFIG
+```
+
+
+## Usage (Page abstract)
+
+You can use the Page abstract to request information from your connected wiki.
+
+### Request all page blocks
+
+```ruby
+page = Wiki::Api::Page.new name: "Wiktionary:Welcome,_newcomers"
+page.blocks.each do |headline, element_groups|
+  element_groups.each do |element_group|
+    element_group.each do |element|
+      # exposed nokogiri element
+      puts element.text
+    end
+  end
+end
+```
+
+### Request all blocks for a predefined headline
+
+```ruby
+page = Wiki::Api::Page.new name: "Wiktionary:Welcome,_newcomers"
+# headline_name is a lookup of the headline element Id
+# <span class="mw-headline" id="Editing_Wiktionary">Editing Wiktionary</span>
+elements = page.headline_block "Editing_Wiktionary"
+elements.each do |element|
+  # exposed nokogiri element
+  puts element.text
+end
+```
+
+
+
+
+
