@@ -7,11 +7,13 @@ module Wiki
 
       def initialize(options={})
         self.name = options[:name] if options.include? :name
-        @connect = Wiki::Api::Connect.new
-      end
-
-      def connect
-        @connect
+        @@config ||= nil
+        if @@config.nil?
+          # use the connection to collect HTML pages for parsing
+          @connect = Wiki::Api::Connect.new
+        else
+          # using a local HTML file for parsing
+        end
       end
 
       def headlines
@@ -19,19 +21,19 @@ module Wiki
       end
 
       def blocks
-        self.parsed_page ||= @connect.page self.name
+        self.load_page!
         self.parse_blocks
       end
 
       def headline_block headline_name
-        self.parsed_page ||= @connect.page self.name
+        self.load_page!
         xs = self.parse_blocks headline_name
         return [] if xs.empty?
         xs[headline_name].flatten
       end
 
       def to_html
-        self.parsed_page ||= @connect.page self.name
+        self.load_page!
         self.parsed_page.to_xhtml indent: 3, indent_text: " "
       end
 
@@ -39,7 +41,28 @@ module Wiki
         self.parse_page = nil
       end
 
+      class << self
+        def config=(config = {})
+          @@config = config
+        end
+      end
+
+      def connect
+        @connect
+      end
+
+
       protected
+
+      def load_page!
+        if @@config.nil?
+          self.parsed_page ||= @connect.page self.name
+        elsif self.parsed_page.nil?
+          f = File.open(@@config[:file])
+          self.parsed_page = Nokogiri::HTML(f)
+          f.close
+        end
+      end
 
       # harvest first part of the page (missing heading and class="mw-headline")
       def first_part
@@ -59,15 +82,16 @@ module Wiki
         # NOTE: first_part has no id attribute and thus cannot be filtered or processed within xpath (xs)
         if headline_name != self.name
           x = self.first_part
-          elements = self.collect_elements x
+          #elements = self.collect_elements x
           result[self.name] ||= [] 
-          result[self.name] << elements
+          #result[self.name] << (self.collect_elements(x))
+          result[self.name] << (self.collect_elements(x.parent))
         end
 
         # append all blocks
         xs.each do |x|
           headline = x.attributes["id"].value
-          elements = self.collect_elements x
+          elements = self.collect_elements x.parent.next
           result[headline] ||= [] 
           result[headline] << elements
         end
@@ -76,9 +100,8 @@ module Wiki
       end
 
       # collect elements within headlines (not nested properties, but next elements)
-      def collect_elements x
+      def collect_elements element
         # capture first element name
-        element = x.parent.next
         elements = []
         # iterate text until next headline
         while true do

@@ -2,13 +2,22 @@ require 'rubygems'
 require 'test/unit'
 require File.expand_path(File.dirname(__FILE__) + "/../../lib/wiki/api")
 
+#
+# Testing the parsing of URI (with a predownloaded HTML file):
+#   /files/Wiktionary_Welcome,_newcomers.html (2013-03-27)
+#
+# Online equivalent:
+#   https://en.wiktionary.org/wiki/Wiktionary:Welcome,_newcomers
+#
 
-class WikiConnect < Test::Unit::TestCase
+class WikiConnectOffline < Test::Unit::TestCase
 
-  CONFIG = { uri: "http://en.wiktionary.org" }
+  CONFIG = { file: File.expand_path(File.dirname(__FILE__) + "/files/Wiktionary_Welcome,_newcomers.html") }
+  #CONFIG = { uri: "http://en.wiktionary.org" }
 
   def setup
-    Wiki::Api::Connect.config = CONFIG
+    Wiki::Api::Page.config = CONFIG
+    # Wiki::Api::Connect.config = CONFIG
   end
 
   def teardown
@@ -24,12 +33,19 @@ class WikiConnect < Test::Unit::TestCase
     page = Wiki::Api::Page.new name: page_name
     headlines = page.headlines
     unless headlines.empty?
+      # iterate headlines, and test for strings
       page.headlines.each do |headline|
         assert headline.is_a?(String)
       end
+
+      # test absolute headlines
       assert page.headlines.include?(page_name), "expected headline: #{page_name}"
+      assert page.headlines.include?("Editing_Wiktionary"), "expected headline: Editing_Wiktionary"
+      assert page.headlines.include?("Norms_and_etiquette"), "expected headline: Norms_and_etiquette"
+      assert page.headlines.include?("For_more_information"), "expected headline: For_more_information"      
     else
       # NOTE: no headlines found!
+      assert false, "no headlines found"
     end
   end
 
@@ -45,6 +61,8 @@ class WikiConnect < Test::Unit::TestCase
             # puts element.class
             # puts element.text
           end
+
+          #element_group[0].text
         end
         #assert (headline.attributes["class"].value == "mw-headline"), "expected mw-headline class"
       end
