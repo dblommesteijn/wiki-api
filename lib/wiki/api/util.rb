@@ -7,7 +7,7 @@ module Wiki
 
         def element_to_text element
           raise "not an element" unless element.is_a? Nokogiri::XML::Element
-          self.clean_text element
+          self.clean_text element.text
         end
 
         def element_filter_lists element

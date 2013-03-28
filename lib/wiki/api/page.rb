@@ -17,55 +17,32 @@ module Wiki
       end
 
       def headlines
-        self.blocks.keys
-      end
-
-      def blocks
-        self.load_page!
-        self.parse_blocks
-      end
-
-      def blocks_to_text
-        self.load_page!
-        texts = {}
-        self.blocks.each do |headline, element_groups|
-          element_groups.each do |element_group, i|
-            element_group.each do |element|
-              # parse elements to text
-              text = Wiki::Api::Util.element_to_text element if element.is_a? Nokogiri::XML::Element
-              next if text.nil? || text.empty?
-              texts[headline] ||= []
-              texts[headline] << text
-            end
+        headlines = []
+        self.parse_blocks.each do |headline_name, elements|
+          headline = PageHeadline.new name: headline_name
+          elements.each do |element|
+            # nokogiri element
+            headline.block << element
           end
+          headlines << headline
         end
-        texts
+        headlines
       end
 
-      def headline_block headline_name
-        self.load_page!
-        xs = self.parse_blocks headline_name
-        return [] if xs.empty?
-        xs[headline_name].flatten
-      end
-
-      def blocks_headline_to_text headline_name
-        self.load_page!
-        xs = self.parse_blocks headline_name
-        texts = {}
-        xs.each do |headline, element_groups|
-          element_groups.each do |element_group|
-            element_group.each do |element|
-              # parse elements to text
-              text = Wiki::Api::Util.element_to_text element if element.is_a? Nokogiri::XML::Element
-              next if text.nil? || text.empty?
-              texts[headline] ||= []
-              texts[headline] << text
-            end
+      def headline headline_name
+        headlines = []
+        self.parse_blocks(headline_name).each do |headline_name, elements|
+          headline = PageHeadline.new name: headline_name
+          elements.each do |element|
+            # nokogiri element
+            headline.block << element
           end
+          headlines << headline
         end
-        texts
+        headlines
       end
+
+
 
       def to_html
         self.load_page!
@@ -94,14 +71,10 @@ module Wiki
         end
       end
 
-      # harvest first part of the page (missing heading and class="mw-headline")
-      def first_part
-        self.parsed_page ||= @connect.page self.name
-        self.parsed_page.search("p").first.children.first
-      end
 
       # parse blocks
       def parse_blocks headline_name = nil
+        self.load_page!
         result = {}
 
         # get headline nodes by span class
@@ -125,6 +98,12 @@ module Wiki
         end
 
         result
+      end
+
+      # harvest first part of the page (missing heading and class="mw-headline")
+      def first_part
+        self.parsed_page ||= @connect.page self.name
+        self.parsed_page.search("p").first.children.first
       end
 
       # collect elements within headlines (not nested properties, but next elements)

@@ -49,6 +49,9 @@ module Wiki
         def config=(config = {})
           @@config = config
         end
+        def config
+          @@config ||= []
+        end
       end
 
       protected
