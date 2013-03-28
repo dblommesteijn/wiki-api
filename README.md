@@ -76,11 +76,27 @@ page.blocks.each do |headline, element_groups|
   element_groups.each do |element_group|
     element_group.each do |element|
       # exposed nokogiri element
-      puts element.text
+      text = Wiki::Api::Util.element_to_text element if element.is_a? Nokogiri::XML::Element
+      puts text
     end
   end
 end
 ```
+
+Or auto parse it with a buildin function
+Note: no exposure of nokogiri here!
+
+```ruby
+page = Wiki::Api::Page.new name: "Wiktionary:Welcome,_newcomers"
+texts = page.blocks_to_text
+texts.each do |headline, texts|
+  texts.each do |text|
+    # this will print the text
+    puts text
+  end
+end
+```
+
 
 ### Request all blocks for a predefined headline
 
@@ -91,10 +107,24 @@ page = Wiki::Api::Page.new name: "Wiktionary:Welcome,_newcomers"
 elements = page.headline_block "Editing_Wiktionary"
 elements.each do |element|
   # exposed nokogiri element
-  puts element.text
+  text = Wiki::Api::Util.element_to_text element if element.is_a? Nokogiri::XML::Element
+  puts text
 end
 ```
 
+Or auto parse it with a buildin function
+Note: no exposure of nokogiri here!
+
+```ruby
+page = Wiki::Api::Page.new name: "Wiktionary:Welcome,_newcomers"
+texts = page.blocks_headline_to_text "Editing_Wiktionary"
+texts.each do |headline, texts|
+  texts.each do |text|
+    # this will print the text
+    puts text
+  end
+end
+```
 
 
 

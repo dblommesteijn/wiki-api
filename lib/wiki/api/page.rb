@@ -25,11 +25,46 @@ module Wiki
         self.parse_blocks
       end
 
+      def blocks_to_text
+        self.load_page!
+        texts = {}
+        self.blocks.each do |headline, element_groups|
+          element_groups.each do |element_group, i|
+            element_group.each do |element|
+              # parse elements to text
+              text = Wiki::Api::Util.element_to_text element if element.is_a? Nokogiri::XML::Element
+              next if text.nil? || text.empty?
+              texts[headline] ||= []
+              texts[headline] << text
+            end
+          end
+        end
+        texts
+      end
+
       def headline_block headline_name
         self.load_page!
         xs = self.parse_blocks headline_name
         return [] if xs.empty?
         xs[headline_name].flatten
+      end
+
+      def blocks_headline_to_text headline_name
+        self.load_page!
+        xs = self.parse_blocks headline_name
+        texts = {}
+        xs.each do |headline, element_groups|
+          element_groups.each do |element_group|
+            element_group.each do |element|
+              # parse elements to text
+              text = Wiki::Api::Util.element_to_text element if element.is_a? Nokogiri::XML::Element
+              next if text.nil? || text.empty?
+              texts[headline] ||= []
+              texts[headline] << text
+            end
+          end
+        end
+        texts
       end
 
       def to_html
@@ -46,11 +81,6 @@ module Wiki
           @@config = config
         end
       end
-
-      def connect
-        @connect
-      end
-
 
       protected
 
@@ -82,9 +112,7 @@ module Wiki
         # NOTE: first_part has no id attribute and thus cannot be filtered or processed within xpath (xs)
         if headline_name != self.name
           x = self.first_part
-          #elements = self.collect_elements x
           result[self.name] ||= [] 
-          #result[self.name] << (self.collect_elements(x))
           result[self.name] << (self.collect_elements(x.parent))
         end
 
