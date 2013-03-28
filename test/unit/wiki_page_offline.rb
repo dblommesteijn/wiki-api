@@ -124,22 +124,37 @@ class WikiConnectOffline < Test::Unit::TestCase
 
   def test_page_block_links
     page = Wiki::Api::Page.new name: "Wiktionary:Welcome,_newcomers"
-    headline = "Wiktionary:Welcome,_newcomers"
+    headline = "Norms_and_etiquette"
     texts = {}
     elements = page.headline_block headline
-    puts elements.inspect
+    assert !elements.empty?, "some elements expected"
     elements.each do |element|
-      puts "-----------------------------"
-      puts element
       links = Wiki::Api::Util.element_filter_lists element if element.is_a? Nokogiri::XML::Element
-      next if !links.nil? && links.empty?
-      puts links.inspect
-
+      next if links.nil?
+      next if links.empty?
+      texts[headline] ||= []
+      texts[headline].concat links
     end
+    self.assert_links texts
   end
 
 
   protected
+
+
+  def assert_links links
+
+    if links.include? "Norms_and_etiquette"
+      assert links["Norms_and_etiquette"][0] == "We try not to argue pointlessly. This isn’t a debate forum. Aftercivilizedand reasonable discussion, we try to reach broadconsensusin order to present an accurate, neutral summary of all relevant facts for future readers."
+
+      assert links["Norms_and_etiquette"][1] == "We try to make the entries as unbiased as we can, meaning that definitions or descriptions— even of controversial topics— are not meant to be platforms for preaching of any kind."
+
+      assert links["Norms_and_etiquette"][2] == "Bear in mind this is adictionary, which means there are manythings it is not."
+
+      assert links["Norms_and_etiquette"][3] == "At any point, if you are uncomfortable changing someone else’s work, and you want to add a thought(or question or comment) about an entry or other page, the place is itstalk page(click on the\"discussion\" tab at the top or the\"Discuss this page\" link in the sidebar or elsewhere, depending on your preference skin). Note, though, that we try to keep discussion focused on improving this dictionary."
+    end
+
+  end
 
   def assert_texts texts
 
