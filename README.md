@@ -23,11 +23,10 @@ Requests to the MediaWiki API use the following URI structure:
 
 * Version (0.0.2)
 
-  Buildin to_text options for blocks
+  Index important words per block, page, list item;
 
-  Auto parsing lists (ul, ol, with li's)
+  Parse objects for more elements within a Page.
 
-  Auto parsing links (a href)
 
 
 ### Known Issues
@@ -66,68 +65,79 @@ Wiki::Api::Connect.config = CONFIG
 ```
 
 
-## Usage (Page abstract)
+## Usage
 
-You can use the Page abstract to request information from your connected wiki.
+### Query a Page
 
-### Request all page blocks
+Requesting headlines from a given page.
 
 ```ruby
 page = Wiki::Api::Page.new name: "Wiktionary:Welcome,_newcomers"
-page.blocks.each do |headline, element_groups|
-  element_groups.each do |element_group|
-    element_group.each do |element|
-      # exposed nokogiri element
-      text = Wiki::Api::Util.element_to_text element if element.is_a? Nokogiri::XML::Element
-      puts text
+page.headlines.each do |headline|
+  # printing headline name (PageHeadline)
+  puts headline.name
+end
+```
+
+Getting headlines for a given name.
+
+```ruby
+page = Wiki::Api::Page.new name: "Wiktionary:Welcome,_newcomers"
+page.headline("Wiktionary:Welcome,_newcomers").each do |headline|
+  # printing headline name (PageHeadline)
+  puts headline.name
+end
+```
+
+### Basic Page structure
+
+```ruby
+page = Wiki::Api::Page.new name: "Wiktionary:Welcome,_newcomers"
+
+# iterate PageHeadline objects
+page.headlines.each do |headline|
+
+  # exposing nokogiri internal elements
+  elements = headline.elements.flatten
+  elements.each do |element|
+    # access Nokogiri::XML::*
+  end
+
+
+  # string representation of all nested text
+  block.to_texts
+
+  # iterate PageListItem objects
+  block.list_items.each do |list_item|
+    
+    # string representation of nested text
+    list_item.to_text
+
+    # iterate PageLink objects
+    list_item.links.each do |link|
+      # check part: 'iterate PageLink objects'
     end
+
   end
-end
-```
 
-Or auto parse it with a buildin function
-Note: no exposure of nokogiri here!
+  # iterate PageLink objects
+  headline.block.links.each do |link|
+    
+    # absolute URI object
+    link.uri
 
-```ruby
-page = Wiki::Api::Page.new name: "Wiktionary:Welcome,_newcomers"
-texts = page.blocks_to_text
-texts.each do |headline, texts|
-  texts.each do |text|
-    # this will print the text
-    puts text
+    # html link
+    link.html
+
+    # link name
+    link.title
+
+    # string representation of nested text
+    link.to_text
   end
+
 end
 ```
-
-
-### Request all blocks for a predefined headline
-
-```ruby
-page = Wiki::Api::Page.new name: "Wiktionary:Welcome,_newcomers"
-# headline_name is a lookup of the headline element Id
-# <span class="mw-headline" id="Editing_Wiktionary">Editing Wiktionary</span>
-elements = page.headline_block "Editing_Wiktionary"
-elements.each do |element|
-  # exposed nokogiri element
-  text = Wiki::Api::Util.element_to_text element if element.is_a? Nokogiri::XML::Element
-  puts text
-end
-```
-
-Or auto parse it with a buildin function
-Note: no exposure of nokogiri here!
-
-```ruby
-page = Wiki::Api::Page.new name: "Wiktionary:Welcome,_newcomers"
-texts = page.blocks_headline_to_text "Editing_Wiktionary"
-texts.each do |headline, texts|
-  texts.each do |text|
-    # this will print the text
-    puts text
-  end
-end
-```
-
 
 
 

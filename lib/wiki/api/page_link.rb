@@ -27,7 +27,6 @@ module Wiki
         "<a href=\"#{self.uri}\" alt=\"#{self.title}\">#{self.title}</a>"
       end
 
-
     end
 
   end
