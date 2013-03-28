@@ -103,41 +103,64 @@ page.headlines.each do |headline|
     # access Nokogiri::XML::*
   end
 
-
   # string representation of all nested text
   block.to_texts
 
   # iterate PageListItem objects
   block.list_items.each do |list_item|
-    
     # string representation of nested text
     list_item.to_text
-
     # iterate PageLink objects
     list_item.links.each do |link|
       # check part: 'iterate PageLink objects'
     end
-
   end
 
   # iterate PageLink objects
   headline.block.links.each do |link|
-    
     # absolute URI object
     link.uri
-
     # html link
     link.html
-
     # link name
     link.title
-
     # string representation of nested text
     link.to_text
   end
 
 end
 ```
+
+
+### Example (https://en.wikipedia.org/wiki/Ruby_on_rails)
+
+This is a example of querying wikipedia.org on the page: "Ruby_on_rails", and printing the References headline links for each list item.
+
+```ruby
+# setting a target config
+CONFIG = { uri: "https://en.wikipedia.org" }
+Wiki::Api::Connect.config = CONFIG
+
+# querying the page
+page = Wiki::Api::Page.new name: "Ruby_on_rails"
+
+# get headlines with name Reference (there can be multiple headlines with the same name!)
+headlines = page.headline "References"
+
+# iterate headlines
+headlines.each do |headline|
+  # iterate list items on the given headline
+  headline.block.list_items.each do |list_item|
+
+    # print the uri of all links
+    puts list_item.links.map{ |l| l.uri }
+    
+  end
+end
+```
+
+
+
 
 
 
