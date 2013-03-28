@@ -68,6 +68,7 @@ class WikiConnectOffline < Test::Unit::TestCase
           end
         end
       end
+      assert texts.include?("Wiktionary:Welcome,_newcomers"), "expected first page"
       self.assert_texts texts
     else
       assert false, "expected some headlines"
@@ -76,10 +77,10 @@ class WikiConnectOffline < Test::Unit::TestCase
 
   def test_page_single_block
     page = Wiki::Api::Page.new name: "Wiktionary:Welcome,_newcomers"
-
     headline = "Editing_Wiktionary"
     texts = {}
     elements = page.headline_block headline
+    assert !elements.empty?, "some elements should be found"
     elements.each do |element|
       text = Wiki::Api::Util.element_to_text element if element.is_a? Nokogiri::XML::Element
       next if text.nil? || text.empty?
@@ -95,6 +96,8 @@ class WikiConnectOffline < Test::Unit::TestCase
     headline = "Wiktionary:Welcome,_newcomers"
     texts = {}
     elements = page.headline_block headline
+    assert !elements.empty?, "some elements should be found"
+
     elements.each do |element|
       text = Wiki::Api::Util.element_to_text element if element.is_a? Nokogiri::XML::Element
       next if text.nil? || text.empty?
@@ -117,6 +120,22 @@ class WikiConnectOffline < Test::Unit::TestCase
     texts = page.blocks_headline_to_text "Wiktionary:Welcome,_newcomers"
     assert texts.is_a?(Hash), "expected a hash"
     self.assert_texts texts
+  end
+
+  def test_page_block_links
+    page = Wiki::Api::Page.new name: "Wiktionary:Welcome,_newcomers"
+    headline = "Wiktionary:Welcome,_newcomers"
+    texts = {}
+    elements = page.headline_block headline
+    puts elements.inspect
+    elements.each do |element|
+      puts "-----------------------------"
+      puts element
+      links = Wiki::Api::Util.element_filter_lists element if element.is_a? Nokogiri::XML::Element
+      next if !links.nil? && links.empty?
+      puts links.inspect
+
+    end
   end
 
 

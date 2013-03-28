@@ -110,7 +110,7 @@ module Wiki
         xs = xs.reject{|t| t.attributes["id"].value != headline_name } unless headline_name.nil?
 
         # NOTE: first_part has no id attribute and thus cannot be filtered or processed within xpath (xs)
-        if headline_name != self.name
+        if headline_name == self.name || headline_name.nil?
           x = self.first_part
           result[self.name] ||= [] 
           result[self.name] << (self.collect_elements(x.parent))

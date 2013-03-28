@@ -23,6 +23,8 @@ Requests to the MediaWiki API use the following URI structure:
 
 * Version (0.0.2)
 
+  Buildin to_text options for blocks
+
   Auto parsing lists (ul, ol, with li's)
 
   Auto parsing links (a href)
