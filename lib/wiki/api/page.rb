@@ -82,7 +82,7 @@ module Wiki
         # get headline nodes by span class
         xs = self.parsed_page.xpath("//span[@class='mw-headline']")
         # filter single headline by name (ignore case)
-        xs = xs.reject{|t| t.attributes["id"].value.casecmp(headline_name) == 0 } unless headline_name.nil?
+        xs = self.filter_headline xs, headline_name unless headline_name.nil?
 
         # NOTE: first_part has no id attribute and thus cannot be filtered or processed within xpath (xs)
         if headline_name == self.name || headline_name.nil?
@@ -121,6 +121,14 @@ module Wiki
         elements
       end
 
+      def filter_headline xs, headline_name
+        # transform name to a wiki_id (downcase and space replace with underscore)
+        headline_name = headline_name.downcase.gsub(" ", "_")
+        # reject not matching id's
+        xs.reject do |t| 
+          !t.attributes["id"].value.downcase.start_with?(headline_name)
+        end
+      end
 
     end
 

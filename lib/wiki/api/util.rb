@@ -22,6 +22,7 @@ module Wiki
           result.map{|k,v| v.join("")}
         end
 
+
         protected
         def clean_text text
           text.gsub(/\n/, " ").squeeze(" ").gsub(/\s(\W)/, '\1').gsub(/(\W)\s/, '\1 ').strip

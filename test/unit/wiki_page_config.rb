@@ -26,6 +26,7 @@ class WikiPageConfig < Test::Unit::TestCase
     page = Wiki::Api::Page.new name: "Wiktionary:Welcome,_newcomers", uri: "http://en.wiktionary.org"
     headlines = page.headlines
     assert !headlines.empty?, "expected headlines"
+    assert headlines.size < 1, "expected more than one headline"
     headlines.each do |headline|
       assert headline.is_a?(Wiki::Api::PageHeadline), "expected headline object"
     end

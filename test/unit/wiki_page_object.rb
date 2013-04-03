@@ -45,6 +45,7 @@ class WikiPageObject < Test::Unit::TestCase
     page = Wiki::Api::Page.new name: @page_name
     headlines = page.headlines
     assert !headlines.empty?, "expected headlines"
+    assert headlines.size > 1, "expected more than one headline"
     headlines.each do |headline|
       assert headline.is_a?(Wiki::Api::PageHeadline), "expected headline object"
       elements = headline.elements.flatten
@@ -62,6 +63,7 @@ class WikiPageObject < Test::Unit::TestCase
     page = Wiki::Api::Page.new name: @page_name
     headlines = page.headlines
     assert !headlines.empty?, "expected headlines"
+    assert headlines.size > 1, "expected more than one headline"
     headlines.each do |headline|
       assert headline.is_a?(Wiki::Api::PageHeadline), "expected headline object"
       block = headline.block
@@ -74,6 +76,7 @@ class WikiPageObject < Test::Unit::TestCase
     page = Wiki::Api::Page.new name: @page_name
     headlines = page.headlines
     assert !headlines.empty?, "expected headlines"
+    assert headlines.size > 1, "expected more than one headline"
     headlines.each do |headline|
       assert headline.is_a?(Wiki::Api::PageHeadline), "expected headline object"
       block = headline.block
@@ -91,6 +94,7 @@ class WikiPageObject < Test::Unit::TestCase
     page = Wiki::Api::Page.new name: @page_name
     headlines = page.headlines
     assert !headlines.empty?, "expected headlines"
+    assert headlines.size > 1, "expected more than one headline"
     headlines.each do |headline|
       assert headline.is_a?(Wiki::Api::PageHeadline), "expected headline object"
       block = headline.block
@@ -108,6 +112,7 @@ class WikiPageObject < Test::Unit::TestCase
     page = Wiki::Api::Page.new name: @page_name
     headlines = page.headlines
     assert !headlines.empty?, "expected headlines"
+    assert headlines.size > 1, "expected more than one headline"
     headlines.each do |headline|
       assert headline.is_a?(Wiki::Api::PageHeadline), "expected headline object"
       block = headline.block
@@ -126,6 +131,7 @@ class WikiPageObject < Test::Unit::TestCase
     page = Wiki::Api::Page.new name: @page_name
     headlines = page.headlines
     assert !headlines.empty?, "expected headlines"
+    assert headlines.size > 1, "expected more than one headline"
     headlines.each do |headline|
       assert headline.is_a?(Wiki::Api::PageHeadline), "expected headline object"
       block = headline.block
@@ -148,6 +154,7 @@ class WikiPageObject < Test::Unit::TestCase
     page = Wiki::Api::Page.new name: @page_name
     headlines = page.headlines
     assert !headlines.empty?, "expected headlines"
+    assert headlines.size > 1, "expected more than one headline"
 
     # collect headline names
     hs = []
@@ -162,6 +169,7 @@ class WikiPageObject < Test::Unit::TestCase
       headlines = page.headline h
       # test for at least one (many indicates multiple headlines with the same name)
       assert !headlines.empty?, "expected a list of headlines"
+      assert headlines.size == 1, "expected one headline"
       headlines.each do |headline|
         assert headline.is_a?(Wiki::Api::PageHeadline), "expected headline object"
       end
@@ -173,6 +181,8 @@ class WikiPageObject < Test::Unit::TestCase
 
     headlines = page.headline "Editing_Wiktionary"
     assert !headlines.empty?, "expected headlines"
+    assert headlines.size == 1, "expected one headline"
+
 
     # iterate headlines
     headlines.each do |headline|
@@ -180,7 +190,7 @@ class WikiPageObject < Test::Unit::TestCase
     end
 
     # search downcase
-    headlines = page.headline headlines.first.name.downcase
+    headlines = page.headline "editing_wiktionary"
     assert !headlines.empty?, "expected headlines"
 
     # iterate headlines
@@ -188,6 +198,26 @@ class WikiPageObject < Test::Unit::TestCase
       assert headline.is_a?(Wiki::Api::PageHeadline), "expected headline object"
     end
 
+  end
+
+  def test_page_headline_search_regular
+    page = Wiki::Api::Page.new name: @page_name
+
+    headlines = page.headline "Editing_Wiktionary"
+    assert !headlines.empty?, "expected headlines"
+    assert headlines.size == 1, "expected one headline"
+
+    # iterate headlines
+    headlines.each do |headline|
+      assert headline.is_a?(Wiki::Api::PageHeadline), "expected headline object"
+    end
+
+    # search downcase
+    headlines = page.headline "editing wiktionary"
+    assert headlines.size == 1, "expected one headline"
+
+    headlines = page.headline "editing wiktionary"
+    assert headlines.size == 1, "expected one headline"
 
   end
 
