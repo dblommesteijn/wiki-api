@@ -161,7 +161,7 @@ end
 
 
 
-### Example pasing URI (https://en.wikipedia.org/wiki/Ruby_on_rails)
+### Example passing URI (https://en.wikipedia.org/wiki/Ruby_on_rails)
 
 This is the same example as the one above, except for setting a global config to direct the requests to a given URI.
 

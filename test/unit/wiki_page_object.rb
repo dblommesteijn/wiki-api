@@ -168,4 +168,27 @@ class WikiPageObject < Test::Unit::TestCase
     end
   end
 
+  def test_page_headline_search_downcase
+    page = Wiki::Api::Page.new name: @page_name
+
+    headlines = page.headline "Editing_Wiktionary"
+    assert !headlines.empty?, "expected headlines"
+
+    # iterate headlines
+    headlines.each do |headline|
+      assert headline.is_a?(Wiki::Api::PageHeadline), "expected headline object"
+    end
+
+    # search downcase
+    headlines = page.headline headlines.first.name.downcase
+    assert !headlines.empty?, "expected headlines"
+
+    # iterate headlines
+    headlines.each do |headline|
+      assert headline.is_a?(Wiki::Api::PageHeadline), "expected headline object"
+    end
+
+
+  end
+
 end

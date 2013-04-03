@@ -81,8 +81,8 @@ module Wiki
 
         # get headline nodes by span class
         xs = self.parsed_page.xpath("//span[@class='mw-headline']")
-        # filter single headline by name
-        xs = xs.reject{|t| t.attributes["id"].value != headline_name } unless headline_name.nil?
+        # filter single headline by name (ignore case)
+        xs = xs.reject{|t| t.attributes["id"].value.casecmp(headline_name) == 0 } unless headline_name.nil?
 
         # NOTE: first_part has no id attribute and thus cannot be filtered or processed within xpath (xs)
         if headline_name == self.name || headline_name.nil?
