@@ -10,6 +10,7 @@ module Wiki
       attr_accessor :uri, :api_path, :api_options, :http, :request, :response, :html, :parsed
 
       def initialize(options={})
+        @@config ||= nil
         options.merge! @@config unless @@config.nil?
         self.uri = options[:uri] if options.include? :uri
         self.api_path = options[:api_path] if options.include? :api_path

@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = Wiki::Api::VERSION
   spec.authors       = ["Dennis Blommesteijn"]
   spec.email         = ["dennis@blommesteijn.com"]
-  spec.description   = %q{MediaWiki API and parser}
-  spec.summary       = %q{MediaWiki API and parser}
+  spec.description   = %q{MediaWiki API and content parser.}
+  spec.summary       = %q{MediaWiki API and content parser.}
   spec.homepage      = ""
   spec.license       = "MIT"
 

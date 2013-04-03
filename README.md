@@ -132,7 +132,7 @@ end
 ```
 
 
-### Example (https://en.wikipedia.org/wiki/Ruby_on_rails)
+### Example using Global config (https://en.wikipedia.org/wiki/Ruby_on_rails)
 
 This is a example of querying wikipedia.org on the page: "Ruby_on_rails", and printing the References headline links for each list item.
 
@@ -161,6 +161,28 @@ end
 
 
 
+### Example pasing URI (https://en.wikipedia.org/wiki/Ruby_on_rails)
+
+This is the same example as the one above, except for setting a global config to direct the requests to a given URI.
+
+```ruby
+# querying the page
+page = Wiki::Api::Page.new name: "Ruby_on_rails", uri: "https://en.wikipedia.org"
+
+# get headlines with name Reference (there can be multiple headlines with the same name!)
+headlines = page.headline "References"
+
+# iterate headlines
+headlines.each do |headline|
+  # iterate list items on the given headline
+  headline.block.list_items.each do |list_item|
+
+    # print the uri of all links
+    puts list_item.links.map{ |l| l.uri }
+    
+  end
+end
+```
 
 
 

@@ -3,14 +3,16 @@ module Wiki
 
     class Page
 
-      attr_accessor :name, :parsed_page
+      attr_accessor :name, :parsed_page, :uri
 
       def initialize(options={})
         self.name = options[:name] if options.include? :name
+        uri = options[:uri] if options.include? :uri
+
         @@config ||= nil
-        if @@config.nil?
+        if @@config.nil? || !uri.nil?
           # use the connection to collect HTML pages for parsing
-          @connect = Wiki::Api::Connect.new
+          @connect = Wiki::Api::Connect.new uri: uri
         else
           # using a local HTML file for parsing
         end
