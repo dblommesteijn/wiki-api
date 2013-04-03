@@ -8,9 +8,9 @@ Gem::Specification.new do |spec|
   spec.version       = Wiki::Api::VERSION
   spec.authors       = ["Dennis Blommesteijn"]
   spec.email         = ["dennis@blommesteijn.com"]
-  spec.description   = %q{MediaWiki API and content parser.}
-  spec.summary       = %q{MediaWiki API and content parser.}
-  spec.homepage      = ""
+  spec.description   = %q{MediaWiki API and Page content parser for Headlines, Blocks, Elements, ListItems, and Links.}
+  spec.summary       = %q{MediaWiki API and Page content parser for Headlines, Blocks, Elements, ListItems, and Links.}
+  spec.homepage      = "https://github.com/dblommesteijn/wiki-api"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
@@ -22,8 +22,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake"
 
   # dependencies
-  spec.add_dependency 'nokogiri'
-  spec.add_dependency 'json'
-  spec.add_development_dependency "test-unit"
+  spec.add_dependency 'nokogiri', "~> 1.5.0"
+  spec.add_dependency 'json', "~> 1.6.1"
+  spec.add_development_dependency "test-unit", "~> 2.0.0"
 
 end

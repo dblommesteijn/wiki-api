@@ -213,10 +213,15 @@ class WikiPageObject < Test::Unit::TestCase
     end
 
     # search downcase
+    headlines = page.headline "editing_wiktionary"
+    assert headlines.size == 1, "expected one headline"
+
+    # search downcase with spaces
     headlines = page.headline "editing wiktionary"
     assert headlines.size == 1, "expected one headline"
 
-    headlines = page.headline "editing wiktionary"
+    # search idiot case with spaces
+    headlines = page.headline "eDiTinG wiKtiOnarY"
     assert headlines.size == 1, "expected one headline"
 
   end

@@ -17,16 +17,20 @@ Requests to the MediaWiki API use the following URI structure:
 
 ### Roadmap
 
-* Version (0.0.1) (current)
-
-  Initial project.
-
-* Version (0.0.2)
+* Version (0.0.2) (current)
 
   Index important words per block, page, list item;
 
   Parse objects for more elements within a Page.
 
+
+### Changelog
+
+* Version (0.0.1) -> (0.0.2)
+  
+  Nested ListItems, Links (within Page)
+
+  Search on Page headline (ignore case, and underscore)
 
 
 ### Known Issues
