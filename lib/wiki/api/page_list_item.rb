@@ -1,6 +1,7 @@
 module Wiki
   module Api
 
+    # List Items on a Page (li=xxx)
     class PageListItem
 
       attr_accessor :element, :parent

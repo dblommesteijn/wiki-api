@@ -9,7 +9,6 @@ module Wiki
       def initialize options={}
         self.name = options[:name] if options.include? :name
         self.parent = options[:parent] if options.include? :parent
-
         self.block = PageBlock.new parent: self
       end
 

@@ -32,7 +32,7 @@ module Wiki
       def headline headline_name
         headlines = []
         self.parse_blocks(headline_name).each do |headline_name, elements|
-          headline = PageHeadline.new name: headline_name
+          headline = PageHeadline.new parent: self, name: headline_name
           elements.each do |element|
             # nokogiri element
             headline.block << element
