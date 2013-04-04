@@ -1,12 +1,14 @@
 module Wiki
   module Api
 
+    # Link on a wiki page (a href=xxx)
     class PageLink
 
-      attr_accessor :element
+      attr_accessor :element, :parent
 
       def initialize options={}
         self.element = options[:element] if options.include? :element
+        self.parent = options[:parent] if options.include? :parent
       end
 
       def to_text
@@ -14,7 +16,8 @@ module Wiki
       end
 
       def uri
-        host = Wiki::Api::Connect.config[:uri]
+        # lookup the root parent, and get connector info
+        host = Wiki::Api::Util.parent_root(self).connect.uri
         element_value = self.element.attributes["href"].value
         URI.parse "#{host}#{element_value}"
       end

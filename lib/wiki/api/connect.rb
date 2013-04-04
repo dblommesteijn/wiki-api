@@ -7,12 +7,13 @@ module Wiki
 
     class Connect
 
-      attr_accessor :uri, :api_path, :api_options, :http, :request, :response, :html, :parsed
+      attr_accessor :uri, :api_path, :api_options, :http, :request, :response, :html, :parsed, :file
 
       def initialize(options={})
         @@config ||= nil
         options.merge! @@config unless @@config.nil?
         self.uri = options[:uri] if options.include? :uri
+        self.file = options[:file] if options.include? :file
         self.api_path = options[:api_path] if options.include? :api_path
         self.api_options = options[:api_options] if options.include? :api_options
 
@@ -38,12 +39,25 @@ module Wiki
 
       def page page_name
         self.api_options[:page] = page_name
-        self.connect
-        response = self.response
-        json = JSON.parse response.body, {symbolize_names: true}
-        raise json[:error][:code] unless valid? json, response
-        self.html = json[:parse][:text]
-        self.parsed = Nokogiri::HTML self.html[:*]
+        # parse page by uri
+        if !self.uri.nil?
+          self.connect
+          response = self.response
+          json = JSON.parse response.body, {symbolize_names: true}
+          raise json[:error][:code] unless valid? json, response
+          self.html = json[:parse][:text]
+          self.parsed = Nokogiri::HTML self.html[:*]
+        # parse page by file
+        elsif !self.file.nil?
+          f = File.open(self.file)
+          # self.parsed = Nokogiri::HTML self.html[:*]
+          self.parsed = Nokogiri::HTML(f)
+          f.close
+        # invalid config, raise exception
+        else
+          raise "no :uri or :file config found!"
+        end
+        self.parsed
       end
 
       class << self

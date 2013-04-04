@@ -12,18 +12,18 @@ require File.expand_path(File.dirname(__FILE__) + "/../../lib/wiki/api")
 #   https://en.wiktionary.org/wiki/Wiktionary:Welcome,_newcomers
 #
 
-class WikiPageObject < Test::Unit::TestCase
+class WikiPageOfflineConfig < Test::Unit::TestCase
 
   # this global is required to resolve URIs (MediaWiki uses relative paths in their links)
-  GLB_CONFIG = { uri: "http://en.wiktionary.org" }
+  URI_CONFIG = { uri: "http://en.wiktionary.org" }
 
   # use local file for test loading
   PAGE_CONFIG = { file: File.expand_path(File.dirname(__FILE__) + "/files/Wiktionary_Welcome,_newcomers.html") }
 
   def setup
     # NOTE: comment Page.config, to use the online MediaWiki instance
-    Wiki::Api::Page.config = PAGE_CONFIG
-    Wiki::Api::Connect.config = GLB_CONFIG
+    Wiki::Api::Connect.config = URI_CONFIG
+    Wiki::Api::Connect.config.merge! PAGE_CONFIG
     @page_name = "Wiktionary:Welcome,_newcomers"
   end
 
@@ -183,7 +183,6 @@ class WikiPageObject < Test::Unit::TestCase
     assert !headlines.empty?, "expected headlines"
     assert headlines.size == 1, "expected one headline"
 
-
     # iterate headlines
     headlines.each do |headline|
       assert headline.is_a?(Wiki::Api::PageHeadline), "expected headline object"
@@ -225,5 +224,6 @@ class WikiPageObject < Test::Unit::TestCase
     assert headlines.size == 1, "expected one headline"
 
   end
+ 
 
 end

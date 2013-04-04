@@ -1,27 +1,25 @@
 module Wiki
   module Api
 
+    # MediaWiki Page, collection of all html information plus it's page title
     class Page
 
-      attr_accessor :name, :parsed_page, :uri
+      attr_accessor :name, :parsed_page, :uri, :parent
 
       def initialize(options={})
         self.name = options[:name] if options.include? :name
-        uri = options[:uri] if options.include? :uri
+        self.uri = options[:uri] if options.include? :uri
+        @connect = Wiki::Api::Connect.new uri: uri
+      end
 
-        @@config ||= nil
-        if @@config.nil? || !uri.nil?
-          # use the connection to collect HTML pages for parsing
-          @connect = Wiki::Api::Connect.new uri: uri
-        else
-          # using a local HTML file for parsing
-        end
+      def connect
+        @connect
       end
 
       def headlines
         headlines = []
         self.parse_blocks.each do |headline_name, elements|
-          headline = PageHeadline.new name: headline_name
+          headline = PageHeadline.new parent: self, name: headline_name
           elements.each do |element|
             # nokogiri element
             headline.block << element
@@ -45,7 +43,6 @@ module Wiki
       end
 
 
-
       def to_html
         self.load_page!
         self.parsed_page.to_xhtml indent: 3, indent_text: " "
@@ -55,22 +52,10 @@ module Wiki
         self.parse_page = nil
       end
 
-      class << self
-        def config=(config = {})
-          @@config = config
-        end
-      end
-
       protected
 
       def load_page!
-        if @@config.nil?
-          self.parsed_page ||= @connect.page self.name
-        elsif self.parsed_page.nil?
-          f = File.open(@@config[:file])
-          self.parsed_page = Nokogiri::HTML(f)
-          f.close
-        end
+        self.parsed_page ||= @connect.page self.name
       end
 
 

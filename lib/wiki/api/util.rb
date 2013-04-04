@@ -19,7 +19,16 @@ module Wiki
               result[i] << self.clean_text(child.text)
             end
           end
-          result.map{|k,v| v.join("")}
+          result.map{ |k,v| v.join("") }
+        end
+
+        def parent_root current_object
+          current = current_object
+          while true do
+            break if current.parent.nil?
+            current = current.parent
+          end
+          current
         end
 
 

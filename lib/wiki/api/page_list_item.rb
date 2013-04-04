@@ -3,10 +3,11 @@ module Wiki
 
     class PageListItem
 
-      attr_accessor :element
+      attr_accessor :element, :parent
 
       def initialize options={}
         self.element = options[:element] if options.include? :element
+        self.parent = options[:parent] if options.include? :parent
       end
 
       def to_text
@@ -15,7 +16,7 @@ module Wiki
 
       def links
         self.search("a").map do |a|
-          PageLink.new element: a
+          PageLink.new parent: self, element: a
         end
       end
 

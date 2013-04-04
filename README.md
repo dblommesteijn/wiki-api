@@ -8,6 +8,10 @@ Requests to the MediaWiki API use the following URI structure:
 
     http(s)://somemediawiki.org/w/api.php?action=parse&format=json&page="anypage"
 
+# RDoc (rdoc.info)
+
+    http://rdoc.info/github/dblommesteijn/wiki-api/
+
 
 ### Dependencies (production)
 
@@ -15,27 +19,27 @@ Requests to the MediaWiki API use the following URI structure:
 * nokogiri
 
 
-### Roadmap
+### Feature Roadmap
 
-* Version (0.0.2) (current)
-
-  Index important words per block, page, list item;
-
-  Parse objects for more elements within a Page.
+* Version (0.0.3)
+  
+  No features determined yet (please drop me a line if you're interested in additions).
 
 
 ### Changelog
 
-* Version (0.0.1) -> (0.0.2)
+* Version (0.0.1) -> (current)
   
   Nested ListItems, Links (within Page)
 
   Search on Page headline (ignore case, and underscore)
 
+* Version (current) -> (0.0.3)
 
-### Known Issues
+  PageLink URI without global config Exception resolved
 
-None discovered thus far.
+  Reverse (parent) object lookup
+
 
 
 ## Installation
@@ -146,7 +150,7 @@ CONFIG = { uri: "https://en.wikipedia.org" }
 Wiki::Api::Connect.config = CONFIG
 
 # querying the page
-page = Wiki::Api::Page.new name: "Ruby_on_rails"
+page = Wiki::Api::Page.new name: "Ruby_on_Rails"
 
 # get headlines with name Reference (there can be multiple headlines with the same name!)
 headlines = page.headline "References"
@@ -171,7 +175,7 @@ This is the same example as the one above, except for setting a global config to
 
 ```ruby
 # querying the page
-page = Wiki::Api::Page.new name: "Ruby_on_rails", uri: "https://en.wikipedia.org"
+page = Wiki::Api::Page.new name: "Ruby_on_Rails", uri: "https://en.wikipedia.org"
 
 # get headlines with name Reference (there can be multiple headlines with the same name!)
 headlines = page.headline "References"
@@ -187,6 +191,39 @@ headlines.each do |headline|
   end
 end
 ```
+
+
+### Example searching headlines
+
+This example shows how the headlines can be searched. For more info check: https://github.com/dblommesteijn/wiki-api/blob/master/lib/wiki/api/page.rb#L109
+
+
+```ruby
+# querying the page
+page = Wiki::Api::Page.new name: "Ruby_on_Rails", uri: "https://en.wikipedia.org"
+
+# NOTE: the following are all valid headline names:
+
+# request headline (by literal name)
+headlines = page.headline "Philosophy_and_design"
+puts headlines.map{|h| h.name}
+
+# request headline (by downcase name)
+headlines = page.headline "philosophy_and_design"
+puts headlines.map{|h| h.name}
+
+# request headline (by human name)
+headlines = page.headline "philosophy and design"
+puts headlines.map{|h| h.name}
+
+# NOTE2: headlines are matched on headline.start_with?(requested_headline)
+
+# because of start_with? compare this should work as well!
+headlines = page.headline "philosophy"
+puts headlines.map{|h| h.name}
+
+```
+
 
 
 
