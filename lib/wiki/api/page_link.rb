@@ -18,11 +18,13 @@ module Wiki
       def uri
         # lookup the root parent, and get connector info
         host = Wiki::Api::Util.parent_root(self).connect.uri
-        element_value = self.element.attributes["href"].value
-        URI.parse "#{host}#{element_value}"
+        href_value = self.element.attributes["href"].value
+        URI.parse "#{host}#{href_value}"
       end
 
       def title
+        # skip links with no title
+        return "" if self.element.attributes["title"].nil?
         self.element.attributes["title"].value
       end
 
