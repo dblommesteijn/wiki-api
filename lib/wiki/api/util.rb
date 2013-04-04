@@ -31,6 +31,8 @@ module Wiki
           current
         end
 
+        
+
 
         protected
         def clean_text text
