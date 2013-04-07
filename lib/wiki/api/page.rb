@@ -17,18 +17,18 @@ module Wiki
       end
 
 
-
       # collect all headlines, keep original page formatting
-      def headlines
+      def root_headline
         self.parse_blocks
       end
 
-      # collect headlines by given name, this will flatten the nested headlines
-      def flat_headlines_by_name headline_name
-        # TODO: implement flattening of headlines within the root headline
-        # ALT:  breath search option in the root of the first headline
-        self.parse_blocks(headline_name)
-      end
+      # # collect headlines by given name, this will flatten the nested headlines
+      # def flat_headlines_by_name headline_name
+      #   raise "not yet implemented!"
+      #   # TODO: implement flattening of headlines within the root headline
+      #   # ALT:  breath search option in the root of the first headline
+      #   self.parse_blocks(headline_name)
+      # end
 
 
       def to_html
@@ -39,8 +39,6 @@ module Wiki
       def reset!
         self.parse_page = nil
       end
-
-      
 
       def load_page!
         self.parsed_page ||= @connect.page self.name
@@ -73,19 +71,8 @@ module Wiki
           result[headline] << elements
         end
 
-        # check for type
-        level = PageHeadline::LEVEL.index result.first[1].first.first.previous.name
-        # capture all, starting at root
-        if level == 0
-          name = result.first[0]
-        # create a root placeholder, which contains searched headlines
-        else 
-          level = 0
-          name = "root_placeholder"
-        end
-
         # create root object
-        PageHeadline.new parent: self, name: name, headlines: result, level: level
+        PageHeadline.new parent: self, name: result.first[0], headlines: result, level: 0
       end
 
       # harvest first part of the page (missing heading and class="mw-headline")
