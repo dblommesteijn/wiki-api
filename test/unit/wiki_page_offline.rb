@@ -66,43 +66,43 @@ class WikiPageOfflinePage < Test::Unit::TestCase
   end
 
 
-  def test_headlines_search_tree
-    page = Wiki::Api::Page.new name: "program"
-    assert page.is_a?(Wiki::Api::Page), "expected Page object"
+  # def test_headlines_verify_tree_objects
+  #   page = Wiki::Api::Page.new name: "program"
+  #   assert page.is_a?(Wiki::Api::Page), "expected Page object"
 
-    # get root headline
-    headline = page.root_headline
-    assert headline.is_a?(Wiki::Api::PageHeadline), "expected PageHeadline object"
-    assert headline.name == "program", "expected program headline"
+  #   # get root headline
+  #   headline = page.root_headline
+  #   assert headline.is_a?(Wiki::Api::PageHeadline), "expected PageHeadline object"
+  #   assert headline.name == "program", "expected program headline"
 
-    # search in depth on headline noun
-    nouns = headline.headline_by_name "noun", 1
+  #   # search in depth on headline noun
+  #   nouns = headline.headline_by_name "noun", 1
 
-    nouns.each do |noun|
-      assert noun.is_a?(Wiki::Api::PageHeadline), "expected PageHeadline object"
+  #   nouns.each do |noun|
+  #     assert noun.is_a?(Wiki::Api::PageHeadline), "expected PageHeadline object"
 
-      # get block
-      block = noun.block
-      assert block.is_a?(Wiki::Api::PageBlock), "expected PageBlock object"
+  #     # get block
+  #     block = noun.block
+  #     assert block.is_a?(Wiki::Api::PageBlock), "expected PageBlock object"
 
-      # list items
-      block.list_items.each do |list_item|
-        assert list_item.is_a?(Wiki::Api::PageListItem), "expected PageListItem object"
-        # links
-        list_item.links.each do |link|
-          assert link.is_a?(Wiki::Api::PageLink), "expected PageListItem object"
-        end
-      end
+  #     # list items
+  #     block.list_items.each do |list_item|
+  #       assert list_item.is_a?(Wiki::Api::PageListItem), "expected PageListItem object"
+  #       # links
+  #       list_item.links.each do |link|
+  #         assert link.is_a?(Wiki::Api::PageLink), "expected PageListItem object"
+  #       end
+  #     end
 
-      # links
-      block.links.each do |link|
-        assert link.is_a?(Wiki::Api::PageLink), "expected PageListItem object"
-      end
-    end
-  end
+  #     # links
+  #     block.links.each do |link|
+  #       assert link.is_a?(Wiki::Api::PageLink), "expected PageListItem object"
+  #     end
+  #   end
+  # end
 
 
-  def test_headlines_verify_tree
+  def test_headlines_verify_tree_data
     page = Wiki::Api::Page.new name: "program"
     headline = page.root_headline
     # get root
@@ -196,6 +196,66 @@ class WikiPageOfflinePage < Test::Unit::TestCase
     assert turkish_headlines[1].name == "Noun_9"
     noun_turkish_headlines = turkish_headlines[1].headlines.values
     assert noun_turkish_headlines[0].name == "Declension_5"
+
+  end
+
+
+  def test_headlines_search
+    page = Wiki::Api::Page.new name: "program"
+    headline = page.root_headline
+    # get root
+    assert headline.name == "program", "expected program name"
+
+    headlines = headline.headline "english"
+    assert !headlines.empty?, "expected a headline"
+
+    # iterate english
+    headlines.each do |headline|
+      assert headline.is_a?(Wiki::Api::PageHeadline), "expected PageHeadline object"
+      assert headline.name == "English", "expected English"
+      noun_headlines = headline.headline "noun"
+      assert !noun_headlines.empty?, "exptected a headline"
+      # iterate nouns
+      noun_headlines.each do |noun_headline|
+        assert noun_headline.is_a?(Wiki::Api::PageHeadline), "expected PageHeadline object"
+        assert noun_headline.name == "Noun", "expected Noun"
+        
+        #list_item.links.each do |link|  
+      end
+    end
+  end
+
+  def test_headlines_has_headline
+    # load page
+    page = Wiki::Api::Page.new name: "program"
+
+    # get root
+    root_headline = page.root_headline
+    assert root_headline.name == "program", "expected program name"
+    headline = root_headline.headline("english").first
+
+    # verify existence english headlines
+    assert headline.has_headline?("alternative forms")
+    assert headline.has_headline?("etymology")
+    assert headline.has_headline?("pronunciation")
+    assert headline.has_headline?("noun")
+    assert headline.has_headline?("verb")
+    assert headline.has_headline?("external links")
+    assert !headline.has_headline?("alternative12 forms")
+    assert !headline.has_headline?("etymolfaogy")
+    assert !headline.has_headline?("pronunciafaation")
+    assert !headline.has_headline?("nounia")
+    assert !headline.has_headline?("verbaf")
+    assert !headline.has_headline?("externalaf links")
+
+    # verify existence czech headlines
+    headline = root_headline.headline("czech").first
+    assert headline.has_headline?("pronunciation")
+    assert headline.has_headline?("noun")
+    assert !headline.has_headline?("pronunciation82")
+    assert !headline.has_headline?("nouan")
+
+    #TODO: add other headlines here as well!
 
   end
 

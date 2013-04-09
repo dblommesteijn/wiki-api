@@ -29,11 +29,10 @@ module Wiki
         headlines = options[:headlines]
         # remove self from list
         headlines.delete self.name
-        nested_elements = self.nested_elements headlines, self.name, self.level
+        nested_headlines = self.nested_headlines headlines, self.name, self.level
 
         # iterate nested headlines, and call recursive
-        nested_elements.each do |headline_name, value|
-
+        nested_headlines.each do |headline_name, value|
           level = LEVEL.index value.first.first.previous.name
           self.headlines[headline_name] = (PageHeadline.new parent: self, name: headline_name, headlines: headlines, level: level)
         end
@@ -47,6 +46,7 @@ module Wiki
         self.block.elements.first.first.previous.name
       end
 
+      # get headline by name
       def headline name
         name = name.downcase.gsub(" ", "_")
         self.headlines.reject do |k,v| 
@@ -54,18 +54,28 @@ module Wiki
         end.values()
       end
 
-      def headline_by_name name, depth = 1
+      # recursive headline search
+      # def headline_by_name name, depth = 1
+      #   name = name.downcase.gsub(" ", "_")
+      #   ret = []
+      #   self.headlines.each do |k,v|
+      #     ret << v if k.downcase.start_with?(name)
+      #     next if v.headlines.empty?
+      #     if depth > 0
+      #       q = v.headline_by_name name, (depth - 1)
+      #       ret.concat q
+      #     end
+      #   end
+      #   ret
+      # end
+
+      # headline exists for current headline
+      def has_headline? name
         name = name.downcase.gsub(" ", "_")
-        ret = []
         self.headlines.each do |k,v|
-          ret << v if k.downcase.start_with?(name)
-          next if v.headlines.empty?
-          if depth > 0
-            q = v.headline_by_name name, (depth - 1)
-            ret.concat q
-          end
+          return true if k.downcase.start_with?(name)
         end
-        ret
+        false
       end
 
       def to_hash
@@ -83,7 +93,7 @@ module Wiki
       protected 
 
       # filter nested headlines (elements) from a parent headline (by name)
-      def nested_elements headlines, name, original_level
+      def nested_headlines headlines, name, original_level
         ret = {}
         init_level = nil
         # iterate headlines, skip already done onces

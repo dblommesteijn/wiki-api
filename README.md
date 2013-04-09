@@ -1,8 +1,8 @@
 # Wiki::Api
 
-Wiki API is a gem (Ruby on Rails) that interfaces with the MediaWiki API (https://www.mediawiki.org/wiki/API:Main_page). This gem is more than a interface, it has abstract classes like: Page on which you can request page parameters (like headlines, and text blocks within headlines).
+Wiki API is a gem (Ruby on Rails) that interfaces with the MediaWiki API (https://www.mediawiki.org/wiki/API:Main_page). This gem is more than a interface, it has abstract classes for Page and Headline parsing. You're able to iterate through these headlines, and access data accordingly. 
 
-NOTE: nokogiri is used for background parsing of HTML. Because I believe there is no point of wrapping internals (composing) for this purpose, nokogiri nodes elements etc. are exposed (http://nokogiri.org/Nokogiri.html) through the wiki-api.
+NOTE: This gem has a nokogiri (http://nokogiri.org/Nokogiri.html) backend (for HTML parsing). Major components: Page, Headline, Block, ListItem, and Link are wrappers for easy data access, however it's still possible to retreive the raw HTML within these objects.
 
 Requests to the MediaWiki API use the following URI structure:
 
@@ -10,7 +10,7 @@ Requests to the MediaWiki API use the following URI structure:
 
 # RDoc (rdoc.info)
 
-    http://rdoc.info/github/dblommesteijn/wiki-api/
+    http://rdoc.info/github/dblommesteijn/wiki-api/frames/file/README.md
 
 
 ### Dependencies (production)
@@ -21,24 +21,24 @@ Requests to the MediaWiki API use the following URI structure:
 
 ### Feature Roadmap
 
-* Version (0.0.3)
+* Version (0.1.0)
+
+  Major current release with several core changes.
+
+* Version (0.1.1)
   
   No features determined yet (please drop me a line if you're interested in additions).
 
 
 ### Changelog
 
-* Version (0.0.1) -> (current)
-  
-  Nested ListItems, Links (within Page)
-
-  Search on Page headline (ignore case, and underscore)
-
-* Version (current) -> (0.0.3)
+* Version (0.0.2) -> (current)
 
   PageLink URI without global config Exception resolved
 
   Reverse (parent) object lookup
+
+  Nested PageHeadline objects
 
 
 
@@ -75,13 +75,16 @@ Wiki::Api::Connect.config = CONFIG
 
 ## Usage
 
-### Query a Page
+### Query a Page and Headline
 
 Requesting headlines from a given page.
 
 ```ruby
 page = Wiki::Api::Page.new name: "Wiktionary:Welcome,_newcomers"
-page.headlines.each do |headline|
+# the root headline equals the pagename
+puts page.root_headline.name
+# iterate next level of headlines
+page.root_headline.headlines.each do |headline_name, headline|
   # printing headline name (PageHeadline)
   puts headline.name
 end
@@ -91,29 +94,28 @@ Getting headlines for a given name.
 
 ```ruby
 page = Wiki::Api::Page.new name: "Wiktionary:Welcome,_newcomers"
-page.headline("Wiktionary:Welcome,_newcomers").each do |headline|
-  # printing headline name (PageHeadline)
-  puts headline.name
-end
+# lookup headline by name (underscore and case are ignored)
+headline = page.root_headline.headline("editing wiktionary").first
+# printing headline name (PageHeadline)
+puts headline.name
+# get the type of nested headline (html h1,2,3,4 etc.)
+puts headline.type
 ```
 
 ### Basic Page structure
 
 ```ruby
 page = Wiki::Api::Page.new name: "Wiktionary:Welcome,_newcomers"
-
 # iterate PageHeadline objects
-page.headlines.each do |headline|
-
+page.root_headline.headlines.each do |headline_name, headline|
   # exposing nokogiri internal elements
   elements = headline.elements.flatten
   elements.each do |element|
-    # access Nokogiri::XML::*
+    # print will result in: Nokogiri::XML::Text or Nokogiri::XML::Element
+    puts element.class
   end
-
   # string representation of all nested text
   block.to_texts
-
   # iterate PageListItem objects
   block.list_items.each do |list_item|
     # string representation of nested text
@@ -140,7 +142,7 @@ end
 ```
 
 
-### Example using Global config (https://en.wikipedia.org/wiki/Ruby_on_rails)
+### Example using Global config (https://en.wikipedia.org/wiki/Ruby_on_Rails)
 
 This is a example of querying wikipedia.org on the page: "Ruby_on_rails", and printing the References headline links for each list item.
 
@@ -153,23 +155,20 @@ Wiki::Api::Connect.config = CONFIG
 page = Wiki::Api::Page.new name: "Ruby_on_Rails"
 
 # get headlines with name Reference (there can be multiple headlines with the same name!)
-headlines = page.headline "References"
+headlines = page.root_headline.headline "References"
 
 # iterate headlines
 headlines.each do |headline|
   # iterate list items on the given headline
   headline.block.list_items.each do |list_item|
-
     # print the uri of all links
     puts list_item.links.map{ |l| l.uri }
-    
   end
 end
 ```
 
 
-
-### Example passing URI (https://en.wikipedia.org/wiki/Ruby_on_rails)
+### Example passing URI (https://en.wikipedia.org/wiki/Ruby_on_Rails)
 
 This is the same example as the one above, except for setting a global config to direct the requests to a given URI.
 
@@ -178,7 +177,7 @@ This is the same example as the one above, except for setting a global config to
 page = Wiki::Api::Page.new name: "Ruby_on_Rails", uri: "https://en.wikipedia.org"
 
 # get headlines with name Reference (there can be multiple headlines with the same name!)
-headlines = page.headline "References"
+headlines = page.root_headline.headline "References"
 
 # iterate headlines
 headlines.each do |headline|
@@ -195,7 +194,7 @@ end
 
 ### Example searching headlines
 
-This example shows how the headlines can be searched. For more info check: https://github.com/dblommesteijn/wiki-api/blob/master/lib/wiki/api/page.rb#L109
+This example shows how the headlines can be searched. For more info check: https://github.com/dblommesteijn/wiki-api/blob/master/lib/wiki/api/page.rb#L97
 
 
 ```ruby
@@ -203,25 +202,20 @@ This example shows how the headlines can be searched. For more info check: https
 page = Wiki::Api::Page.new name: "Ruby_on_Rails", uri: "https://en.wikipedia.org"
 
 # NOTE: the following are all valid headline names:
-
 # request headline (by literal name)
-headlines = page.headline "Philosophy_and_design"
+headlines = page.root_headline.headline "Philosophy_and_design"
 puts headlines.map{|h| h.name}
-
 # request headline (by downcase name)
-headlines = page.headline "philosophy_and_design"
+headlines = page.root_headline.headline "philosophy_and_design"
 puts headlines.map{|h| h.name}
-
 # request headline (by human name)
-headlines = page.headline "philosophy and design"
+headlines = page.root_headline.headline "philosophy and design"
 puts headlines.map{|h| h.name}
 
 # NOTE2: headlines are matched on headline.start_with?(requested_headline)
-
 # because of start_with? compare this should work as well!
-headlines = page.headline "philosophy"
+headlines = page.root_headline.headline "philosophy"
 puts headlines.map{|h| h.name}
-
 ```
 
 
