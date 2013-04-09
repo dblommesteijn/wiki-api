@@ -12,6 +12,7 @@ module Wiki
       end
 
       def << value
+        # value.first.previous.name
         self.elements << value
       end
 
