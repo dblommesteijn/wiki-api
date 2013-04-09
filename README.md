@@ -27,7 +27,9 @@ Requests to the MediaWiki API use the following URI structure:
 
 * Version (0.1.1)
   
-  No features determined yet (please drop me a line if you're interested in additions).
+  In depth headline search (recursive headline search)
+
+  Please drop me a line (or create a pull request) for additions.
 
 
 ### Changelog
@@ -39,6 +41,10 @@ Requests to the MediaWiki API use the following URI structure:
   Reverse (parent) object lookup
 
   Nested PageHeadline objects
+
+* Version (current) -> (0.1.1)
+
+  Recursive headline search using headline_in_depth(name, depth).
 
 
 
@@ -219,7 +225,7 @@ puts headlines.map{|h| h.name}
 ```
 
 
-### Example searching in depth
+### Example searching headlines in depth
 
 Recursive search on all nested headlines, including in depth searches.
 
