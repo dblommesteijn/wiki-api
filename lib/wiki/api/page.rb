@@ -16,31 +16,19 @@ module Wiki
         @connect
       end
 
-      def headlines
-        headlines = []
-        self.parse_blocks.each do |headline_name, elements|
-          headline = PageHeadline.new parent: self, name: headline_name
-          elements.each do |element|
-            # nokogiri element
-            headline.block << element
-          end
-          headlines << headline
-        end
-        headlines
+
+      # collect all headlines, keep original page formatting
+      def root_headline
+        self.parse_blocks
       end
 
-      def headline headline_name
-        headlines = []
-        self.parse_blocks(headline_name).each do |headline_name, elements|
-          headline = PageHeadline.new parent: self, name: headline_name
-          elements.each do |element|
-            # nokogiri element
-            headline.block << element
-          end
-          headlines << headline
-        end
-        headlines
-      end
+      # # collect headlines by given name, this will flatten the nested headlines
+      # def flat_headlines_by_name headline_name
+      #   raise "not yet implemented!"
+      #   # TODO: implement flattening of headlines within the root headline
+      #   # ALT:  breath search option in the root of the first headline
+      #   self.parse_blocks(headline_name)
+      # end
 
 
       def to_html
@@ -51,8 +39,6 @@ module Wiki
       def reset!
         self.parse_page = nil
       end
-
-      protected
 
       def load_page!
         self.parsed_page ||= @connect.page self.name
@@ -66,11 +52,12 @@ module Wiki
 
         # get headline nodes by span class
         xs = self.parsed_page.xpath("//span[@class='mw-headline']")
+
         # filter single headline by name (ignore case)
         xs = self.filter_headline xs, headline_name unless headline_name.nil?
 
         # NOTE: first_part has no id attribute and thus cannot be filtered or processed within xpath (xs)
-        if headline_name == self.name || headline_name.nil?
+        if headline_name.nil? || headline_name.start_with?(self.name.downcase)
           x = self.first_part
           result[self.name] ||= [] 
           result[self.name] << (self.collect_elements(x.parent))
@@ -80,11 +67,12 @@ module Wiki
         xs.each do |x|
           headline = x.attributes["id"].value
           elements = self.collect_elements x.parent.next
-          result[headline] ||= [] 
+          result[headline] ||= []
           result[headline] << elements
         end
 
-        result
+        # create root object
+        PageHeadline.new parent: self, name: result.first[0], headlines: result, level: 0
       end
 
       # harvest first part of the page (missing heading and class="mw-headline")

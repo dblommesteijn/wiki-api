@@ -40,7 +40,7 @@ module Wiki
       def page page_name
         self.api_options[:page] = page_name
         # parse page by uri
-        if !self.uri.nil?
+        if !self.uri.nil? && self.file.nil?
           self.connect
           response = self.response
           json = JSON.parse response.body, {symbolize_names: true}

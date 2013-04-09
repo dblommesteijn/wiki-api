@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = Wiki::Api::VERSION
   spec.authors       = ["Dennis Blommesteijn"]
   spec.email         = ["dennis@blommesteijn.com"]
-  spec.description   = %q{MediaWiki API and Page content parser for Headlines, Blocks, Elements, ListItems, and Links.}
-  spec.summary       = %q{MediaWiki API and Page content parser for Headlines, Blocks, Elements, ListItems, and Links.}
+  spec.description   = %q{MediaWiki API and Page content parser for Headlines (nested), TextBlocks, ListItems, and Links.}
+  spec.summary       = %q{MediaWiki API and Page content parser for Headlines (nested), TextBlocks, ListItems, and Links.}
   spec.homepage      = "https://github.com/dblommesteijn/wiki-api"
   spec.license       = "MIT"
 
