@@ -219,5 +219,26 @@ puts headlines.map{|h| h.name}
 ```
 
 
+### Example searching in depth
+
+Recursive search on all nested headlines, including in depth searches.
+
+```ruby
+# querying the page
+page = Wiki::Api::Page.new name: "Ruby_on_Rails", uri: "https://en.wikipedia.org"
+# get root
+root_headline = page.root_headline
+# lookup 'ramework structure' on current level
+headline = root_headline.headline_in_depth("framework structure").first
+puts headline.name
+# NOTE: lookup of nested headlines does not work with the headline function (because 'Framework_structure' is nested within 'Technical_overview')
+headline = root_headline.headline("framework structure").first
+# depth can be limited adding the depth parameter
+# NOTE: the example below will return nil, 'Framework_structure' is nested beyond depth = 0!
+depth = 0
+headline = root_headline.headline_in_depth("framework structure", depth).first
+```
+
+
 
 

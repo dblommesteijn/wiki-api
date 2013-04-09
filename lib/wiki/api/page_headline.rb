@@ -54,20 +54,20 @@ module Wiki
         end.values()
       end
 
-      # recursive headline search
-      # def headline_by_name name, depth = 1
-      #   name = name.downcase.gsub(" ", "_")
-      #   ret = []
-      #   self.headlines.each do |k,v|
-      #     ret << v if k.downcase.start_with?(name)
-      #     next if v.headlines.empty?
-      #     if depth > 0
-      #       q = v.headline_by_name name, (depth - 1)
-      #       ret.concat q
-      #     end
-      #   end
-      #   ret
-      # end
+      def headline_in_depth name, depth = 1
+        name = name.downcase.gsub(" ", "_")
+        ret = []
+
+        self.headlines.each do |k,v|
+          ret << v if k.downcase.start_with?(name)
+          next if v.headlines.empty?
+          if depth > 0
+            q = v.headline_in_depth name, (depth - 1)
+            ret.concat q
+          end
+        end
+        ret
+      end
 
       # headline exists for current headline
       def has_headline? name

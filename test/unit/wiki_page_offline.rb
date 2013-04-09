@@ -259,4 +259,48 @@ class WikiPageOfflinePage < Test::Unit::TestCase
 
   end
 
+  def test_headlines_recursive_search
+    # load page
+    page = Wiki::Api::Page.new name: "program"
+
+    # get root
+    root_headline = page.root_headline
+    assert root_headline.name == "program", "expected program name"
+    headline = root_headline.headline("english").first
+
+    related_terms_headline = headline.headline_in_depth("related terms").first
+    assert related_terms_headline.is_a?(Wiki::Api::PageHeadline), "expected PageHeadline object"
+    assert related_terms_headline.name == "Related_terms"
+    assert related_terms_headline.parent.is_a?(Wiki::Api::PageHeadline)
+    assert related_terms_headline.parent.name == "Verb"
+    assert related_terms_headline.parent.parent.is_a?(Wiki::Api::PageHeadline)
+    assert related_terms_headline.parent.parent.name == "English"
+  end
+
+  def test_headlines_recursive_multi_search
+    # load page
+    page = Wiki::Api::Page.new name: "program"
+
+    # get root
+    root_headline = page.root_headline
+    assert root_headline.name == "program", "expected program name"
+    headline = root_headline.headline("english").first
+    # search translations within english
+    translations_headlines = headline.headline_in_depth("translations")
+    assert translations_headlines[0].name == "Translations"
+    assert translations_headlines[1].name == "Translations_2"
+  end
+
+  def test_headlines_recursive_search_limit_depth
+    # load page
+    page = Wiki::Api::Page.new name: "program"
+    # get root
+    root_headline = page.root_headline
+    assert root_headline.name == "program", "expected program name"
+    headline = root_headline.headline("english").first
+    # search translations within english
+    translations_headlines = headline.headline_in_depth("translations", 0)
+    assert translations_headlines.empty?, "expected no translations at depth 0"
+  end
+
 end
