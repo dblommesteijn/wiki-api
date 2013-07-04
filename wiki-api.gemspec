@@ -22,8 +22,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake"
 
   # dependencies
-  spec.add_dependency 'nokogiri', "~> 1.5.0"
-  spec.add_dependency 'json', "~> 1.6.1"
-  spec.add_development_dependency "test-unit", "~> 2.0.0"
+  spec.add_dependency 'nokogiri', "> 1.5.0"
+  spec.add_dependency 'json', "> 1.6.1"
+  spec.add_development_dependency "test-unit", "> 2.0.0"
 
 end
