@@ -1,6 +1,4 @@
-require 'rubygems'
-require 'test/unit'
-require File.expand_path(File.dirname(__FILE__) + "/../../lib/wiki/api")
+require 'test_helper'
 
 #
 # Testing the connection to https://www.mediawiki.org/wiki/API:Main_page

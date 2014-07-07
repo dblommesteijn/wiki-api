@@ -1,8 +1,3 @@
-
-class ActiveSupport::TestCase
-  setup :global_setup
-
-  def global_setup
-  end
-end
-
+require 'rubygems'
+require 'test/unit'
+require File.expand_path(File.dirname(__FILE__) + "/../lib/wiki/api")

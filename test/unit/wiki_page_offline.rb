@@ -1,8 +1,6 @@
 # encoding: utf-8
 
-require 'rubygems'
-require 'test/unit'
-require File.expand_path(File.dirname(__FILE__) + "/../../lib/wiki/api")
+require 'test_helper'
 
 #
 # Testing the parsing of URI (with a predownloaded HTML file):
@@ -38,7 +36,7 @@ class WikiPageOfflinePage < Test::Unit::TestCase
     assert headline.is_a?(Wiki::Api::PageHeadline), "expected PageHeadline object"
     assert headline.name == "program", "expected developer headline"
 
-    # search nested headline: english   
+    # search nested headline: english
     english = headline.headline("english").first
     assert english.is_a?(Wiki::Api::PageHeadline), "expected PageHeadline object"
 
@@ -107,7 +105,7 @@ class WikiPageOfflinePage < Test::Unit::TestCase
     headline = page.root_headline
     # get root
     assert headline.name == "program", "expected program name"
-    
+
     # iterate one deep and verify headline index names
     headline.headlines.each do |name, headline|
       assert headline.name == name
@@ -219,8 +217,8 @@ class WikiPageOfflinePage < Test::Unit::TestCase
       noun_headlines.each do |noun_headline|
         assert noun_headline.is_a?(Wiki::Api::PageHeadline), "expected PageHeadline object"
         assert noun_headline.name == "Noun", "expected Noun"
-        
-        #list_item.links.each do |link|  
+
+        #list_item.links.each do |link|
       end
     end
   end
