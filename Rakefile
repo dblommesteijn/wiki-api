@@ -7,3 +7,5 @@ Rake::TestTask.new do |t|
   t.test_files = tfs
   t.verbose = true
 end
+
+task default: [:build, :install]
