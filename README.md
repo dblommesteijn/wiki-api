@@ -1,12 +1,14 @@
 # Wiki::Api
 
-Wiki API is a gem (Ruby on Rails) that interfaces with the MediaWiki API (https://www.mediawiki.org/wiki/API:Main_page). This gem is more than a interface, it has abstract classes for Page and Headline parsing. You're able to iterate through these headlines, and access data accordingly. 
+Wiki API is a gem (Ruby on Rails) that interfaces with the MediaWiki API (https://www.mediawiki.org/wiki/API:Main_page). This gem is more than a interface, it has abstract classes for Page and Headline parsing. You're able to iterate through these headlines, and access data accordingly.
 
 NOTE: This gem has a nokogiri (http://nokogiri.org/Nokogiri.html) backend (for HTML parsing). Major components: Page, Headline, Block, ListItem, and Link are wrappers for easy data access, however it's still possible to retreive the raw HTML within these objects.
 
 Requests to the MediaWiki API use the following URI structure:
 
     http(s)://somemediawiki.org/w/api.php?action=parse&format=json&page="anypage"
+
+[![Build Status](https://travis-ci.org/dblommesteijn/wiki-api.svg?branch=master)](https://travis-ci.org/dblommesteijn/wiki-api) [![Coverage Status](https://coveralls.io/repos/dblommesteijn/wiki-api/badge.png)](https://coveralls.io/r/dblommesteijn/wiki-api) [![Code Climate](https://codeclimate.com/github/dblommesteijn/wiki-api.png)](https://codeclimate.com/github/dblommesteijn/wiki-api) [![Dependency Status](https://gemnasium.com/dblommesteijn/wiki-api.svg)](https://gemnasium.com/dblommesteijn/wiki-api)
 
 # RDoc (rdoc.info)
 
@@ -26,7 +28,7 @@ Requests to the MediaWiki API use the following URI structure:
   Major current release with several core changes.
 
 * Version (0.1.1)
-  
+
   In depth headline search (recursive headline search)
 
   Please drop me a line (or create a pull request) for additions.
@@ -192,7 +194,7 @@ headlines.each do |headline|
 
     # print the uri of all links
     puts list_item.links.map{ |l| l.uri }
-    
+
   end
 end
 ```
