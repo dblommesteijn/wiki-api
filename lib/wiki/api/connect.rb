@@ -30,7 +30,7 @@ module Wiki
         uri.query = URI.encode_www_form self.api_options
         self.http = Net::HTTP.new(uri.host, uri.port)
         if uri.scheme == "https"
-          self.http.use_ssl = true 
+          self.http.use_ssl = true
           #self.http.verify_mode = OpenSSL::SSL::VERIFY_NONE
         end
         self.request = Net::HTTP::Get.new(uri.request_uri)
@@ -41,23 +41,31 @@ module Wiki
         self.api_options[:page] = page_name
         # parse page by uri
         if !self.uri.nil? && self.file.nil?
-          self.connect
-          response = self.response
-          json = JSON.parse response.body, {symbolize_names: true}
-          raise json[:error][:code] unless valid? json, response
-          self.html = json[:parse][:text]
-          self.parsed = Nokogiri::HTML self.html[:*]
+          self.parsed = self.parse_from_uri(response)
         # parse page by file
         elsif !self.file.nil?
-          f = File.open(self.file)
-          # self.parsed = Nokogiri::HTML self.html[:*]
-          self.parsed = Nokogiri::HTML(f)
-          f.close
+          self.parsed = self.parse_from_file(self.file)
         # invalid config, raise exception
         else
           raise "no :uri or :file config found!"
         end
         self.parsed
+      end
+
+      def parse_from_uri(response)
+        self.connect
+        response = self.response
+        json = JSON.parse response.body, {symbolize_names: true}
+        raise json[:error][:code] unless valid? json, response
+        self.html = json[:parse][:text]
+        self.parsed = Nokogiri::HTML self.html[:*]
+      end
+
+      def parse_from_file(file)
+        f = File.open(file)
+        ret = Nokogiri::HTML(f)
+        f.close
+        ret
       end
 
       class << self
