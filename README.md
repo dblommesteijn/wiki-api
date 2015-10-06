@@ -8,7 +8,7 @@ Requests to the MediaWiki API use the following URI structure:
 
     http(s)://somemediawiki.org/w/api.php?action=parse&format=json&page="anypage"
 
-[![Build Status](https://travis-ci.org/dblommesteijn/wiki-api.svg?branch=master)](https://travis-ci.org/dblommesteijn/wiki-api) [![Coverage Status](https://coveralls.io/repos/dblommesteijn/wiki-api/badge.png)](https://coveralls.io/r/dblommesteijn/wiki-api) [![Code Climate](https://codeclimate.com/github/dblommesteijn/wiki-api.png)](https://codeclimate.com/github/dblommesteijn/wiki-api) [![Dependency Status](https://gemnasium.com/dblommesteijn/wiki-api.svg)](https://gemnasium.com/dblommesteijn/wiki-api)
+[![Build Status](https://travis-ci.org/dblommesteijn/wiki-api.svg?branch=master)](https://travis-ci.org/dblommesteijn/wiki-api) [![Code Climate](https://codeclimate.com/github/dblommesteijn/wiki-api.png)](https://codeclimate.com/github/dblommesteijn/wiki-api) [![Dependency Status](https://gemnasium.com/dblommesteijn/wiki-api.svg)](https://gemnasium.com/dblommesteijn/wiki-api)
 
 # RDoc (rdoc.info)
 
