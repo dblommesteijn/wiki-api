@@ -7,8 +7,8 @@ module Wiki
       attr_accessor :element, :parent
 
       def initialize options={}
-        self.element = options[:element] if options.include? :element
         self.parent = options[:parent] if options.include? :parent
+        self.element = options[:element] if options.include? :element
       end
 
       def to_text
