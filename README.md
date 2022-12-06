@@ -1,6 +1,6 @@
 # Wiki::Api
 
-[![Build Status](https://travis-ci.org/dblommesteijn/wiki-api.svg?branch=master)](https://travis-ci.org/dblommesteijn/wiki-api) [![Code Climate](https://codeclimate.com/github/dblommesteijn/wiki-api.png)](https://codeclimate.com/github/dblommesteijn/wiki-api) [![Dependency Status](https://gemnasium.com/dblommesteijn/wiki-api.svg)](https://gemnasium.com/dblommesteijn/wiki-api)
+[![Build Status](https://travis-ci.org/dblommesteijn/wiki-api.svg?branch=master)](https://travis-ci.org/dblommesteijn/wiki-api) [![Code Climate](https://codeclimate.com/github/dblommesteijn/wiki-api.png)](https://codeclimate.com/github/dblommesteijn/wiki-api)
 
 Wiki API is a gem (Ruby on Rails) that interfaces with the MediaWiki API (https://www.mediawiki.org/wiki/API:Main_page). This gem is more than a interface, it has abstract classes for Page and Headline parsing. You're able to iterate through these headlines, and access data accordingly.
 
