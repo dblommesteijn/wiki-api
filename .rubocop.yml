@@ -1,0 +1,24 @@
+AllCops:
+  SuggestExtensions: false
+Style/ClassVars:
+  Enabled: false
+Style/Documentation:
+  Enabled: false
+Style/MethodCallWithArgsParentheses:
+  Enabled: true
+Metrics/AbcSize:
+  Enabled: false
+Metrics/ClassLength:
+  Enabled: false
+Metrics/CyclomaticComplexity:
+  Enabled: false
+Metrics/PerceivedComplexity:
+  Enabled: false
+Metrics/MethodLength:
+  Enabled: false
+Naming/MethodParameterName:
+  Enabled: false
+Naming/PredicateName:
+  Enabled: false
+Lint/RescueException:
+  Enabled: false

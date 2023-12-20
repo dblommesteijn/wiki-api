@@ -10,39 +10,9 @@ Requests to the MediaWiki API use the following URI structure:
 
     http(s)://somemediawiki.org/w/api.php?action=parse&format=json&page="anypage"
 
-### Dependencies (production)
+### Dependencies
 
-* json
 * nokogiri
-
-
-### Feature Roadmap
-
-* Version (0.1.0)
-
-  Major current release with several core changes.
-
-* Version (0.1.1)
-
-  In depth headline search (recursive headline search)
-
-  Please drop me a line (or create a pull request) for additions.
-
-
-### Changelog
-
-* Version (0.0.2) -> (current)
-
-  PageLink URI without global config Exception resolved
-
-  Reverse (parent) object lookup
-
-  Nested PageHeadline objects
-
-* Version (current) -> (0.1.1)
-
-  Recursive headline search using headline_in_depth(name, depth).
-
 
 
 ## Installation
@@ -59,22 +29,28 @@ Or install it yourself (RubyGems):
 
     $ gem install wiki-api
 
+Or try it from this repository (local) in a console:
+
+    $ bin/console
+
 
 ## Setup
 
 Define a configuration for your connection (initialize script), this example uses wiktionary.org.
-NOTE: it can connect to both HTTP and HTTPS MediaWikis.
-
-```ruby
-CONFIG = { uri: "http://en.wiktionary.org" }
-```
+NOTE: it can connect to both HTTP and HTTPS MediaWikis (however you'll get a 302 response from MediaWiki)
 
 Setup default configuration (initialize script)
 
 ```ruby
-Wiki::Api::Connect.config = CONFIG
+Wiki::Api::Connect.config = { uri: 'https://en.wiktionary.org' }
 ```
 
+
+## Running tests
+
+```bash
+$ rake test
+```
 
 ## Usage
 
@@ -83,7 +59,7 @@ Wiki::Api::Connect.config = CONFIG
 Requesting headlines from a given page.
 
 ```ruby
-page = Wiki::Api::Page.new name: "Wiktionary:Welcome,_newcomers"
+page = Wiki::Api::Page.new(name: 'Wiktionary:Welcome,_newcomers')
 # the root headline equals the pagename
 puts page.root_headline.name
 # iterate next level of headlines
@@ -96,9 +72,9 @@ end
 Getting headlines for a given name.
 
 ```ruby
-page = Wiki::Api::Page.new name: "Wiktionary:Welcome,_newcomers"
+page = Wiki::Api::Page.new(name: 'Wiktionary:Welcome,_newcomers')
 # lookup headline by name (underscore and case are ignored)
-headline = page.root_headline.headline("editing wiktionary").first
+headline = page.root_headline.headline('editing wiktionary').first
 # printing headline name (PageHeadline)
 puts headline.name
 # get the type of nested headline (html h1,2,3,4 etc.)
@@ -108,7 +84,7 @@ puts headline.type
 ### Basic Page structure
 
 ```ruby
-page = Wiki::Api::Page.new name: "Wiktionary:Welcome,_newcomers"
+page = Wiki::Api::Page.new(name: 'Wiktionary:Welcome,_newcomers')
 # iterate PageHeadline objects
 page.root_headline.headlines.each do |headline_name, headline|
   # exposing nokogiri internal elements
@@ -117,6 +93,7 @@ page.root_headline.headlines.each do |headline_name, headline|
     # print will result in: Nokogiri::XML::Text or Nokogiri::XML::Element
     puts element.class
   end
+
   # string representation of all nested text
   block.to_texts
   # iterate PageListItem objects
@@ -140,7 +117,6 @@ page.root_headline.headlines.each do |headline_name, headline|
     # string representation of nested text
     link.to_text
   end
-
 end
 ```
 
@@ -151,21 +127,20 @@ This is a example of querying wikipedia.org on the page: "Ruby_on_rails", and pr
 
 ```ruby
 # setting a target config
-CONFIG = { uri: "https://en.wikipedia.org" }
-Wiki::Api::Connect.config = CONFIG
+Wiki::Api::Connect.config = { uri: 'https://en.wikipedia.org' }
 
 # querying the page
-page = Wiki::Api::Page.new name: "Ruby_on_Rails"
+page = Wiki::Api::Page.new(name: 'Ruby_on_Rails')
 
 # get headlines with name Reference (there can be multiple headlines with the same name!)
-headlines = page.root_headline.headline "References"
+headlines = page.root_headline.headline('References')
 
 # iterate headlines
 headlines.each do |headline|
   # iterate list items on the given headline
   headline.block.list_items.each do |list_item|
     # print the uri of all links
-    puts list_item.links.map{ |l| l.uri }
+    puts list_item.links.map(&:uri)
   end
 end
 ```
@@ -177,19 +152,17 @@ This is the same example as the one above, except for setting a global config to
 
 ```ruby
 # querying the page
-page = Wiki::Api::Page.new name: "Ruby_on_Rails", uri: "https://en.wikipedia.org"
+page = Wiki::Api::Page.new(name: 'Ruby_on_Rails', uri: 'https://en.wikipedia.org')
 
 # get headlines with name Reference (there can be multiple headlines with the same name!)
-headlines = page.root_headline.headline "References"
+headlines = page.root_headline.headline('References')
 
 # iterate headlines
 headlines.each do |headline|
   # iterate list items on the given headline
   headline.block.list_items.each do |list_item|
-
     # print the uri of all links
-    puts list_item.links.map{ |l| l.uri }
-
+    puts list_item.links.map(&:uri)
   end
 end
 ```
@@ -202,23 +175,23 @@ This example shows how the headlines can be searched. For more info check: https
 
 ```ruby
 # querying the page
-page = Wiki::Api::Page.new name: "Ruby_on_Rails", uri: "https://en.wikipedia.org"
+page = Wiki::Api::Page.new(name: 'Ruby_on_Rails', uri: 'https://en.wikipedia.org')
 
 # NOTE: the following are all valid headline names:
 # request headline (by literal name)
-headlines = page.root_headline.headline "Philosophy_and_design"
-puts headlines.map{|h| h.name}
+headlines = page.root_headline.headline('Philosophy_and_design')
+puts headlines.map(&:name)
 # request headline (by downcase name)
-headlines = page.root_headline.headline "philosophy_and_design"
-puts headlines.map{|h| h.name}
+headlines = page.root_headline.headline('philosophy_and_design')
+puts headlines.map(&:name)
 # request headline (by human name)
-headlines = page.root_headline.headline "philosophy and design"
-puts headlines.map{|h| h.name}
+headlines = page.root_headline.headline('philosophy and design')
+puts headlines.map(&:name)
 
 # NOTE2: headlines are matched on headline.start_with?(requested_headline)
 # because of start_with? compare this should work as well!
-headlines = page.root_headline.headline "philosophy"
-puts headlines.map{|h| h.name}
+headlines = page.root_headline.headline('philosophy')
+puts headlines.map(&:name)
 ```
 
 
@@ -228,20 +201,21 @@ Recursive search on all nested headlines, including in depth searches.
 
 ```ruby
 # querying the page
-page = Wiki::Api::Page.new name: "Ruby_on_Rails", uri: "https://en.wikipedia.org"
+page = Wiki::Api::Page.new(name: 'Ruby_on_Rails', uri: 'https://en.wikipedia.org')
 # get root
 root_headline = page.root_headline
 # lookup 'ramework structure' on current level
-headline = root_headline.headline_in_depth("framework structure").first
+headline = root_headline.headline_in_depth('framework structure').first
 puts headline.name
 # NOTE: lookup of nested headlines does not work with the headline function (because 'Framework_structure' is nested within 'Technical_overview')
-headline = root_headline.headline("framework structure").first
+headline = root_headline.headline('framework structure').first
 # depth can be limited adding the depth parameter
 # NOTE: the example below will return nil, 'Framework_structure' is nested beyond depth = 0!
 depth = 0
-headline = root_headline.headline_in_depth("framework structure", depth).first
+headline = root_headline.headline_in_depth('framework structure', depth).first
+# increasing depth search will show the requested headline
+depth = 5
+headline = root_headline.headline_in_depth('framework structure', depth).first
+puts headline.name
 ```
-
-
-
 
