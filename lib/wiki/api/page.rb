@@ -5,14 +5,13 @@ module Wiki
     # MediaWiki Page, collection of all html information plus it's page title
     class Page
       attr_accessor :name, :parsed_page, :uri, :parent
+      attr_reader :connect
 
       def initialize(options = {})
         self.name = options[:name] if options.include?(:name)
         self.uri = options[:uri] if options.include?(:uri)
-        @connect = Wiki::Api::Connect.new(uri:)
+        @connect = Wiki::Api::Connect.new(uri: uri)
       end
-
-      attr_reader :connect
 
       # collect all headlines, keep original page formatting
       def root_headline
@@ -38,6 +37,19 @@ module Wiki
 
       def load_page!
         self.parsed_page ||= @connect.page(name)
+      end
+
+      def exists?
+        load_page!
+        true
+      rescue Exception => e
+        return false if e.message == 'missingtitle'
+
+        raise(Exception(e))
+      end
+
+      def json_response_body
+        @connect.json_response_body if exists?
       end
 
       # parse blocks

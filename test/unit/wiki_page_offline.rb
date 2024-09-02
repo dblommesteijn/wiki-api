@@ -28,6 +28,8 @@ class WikiPageOfflinePage < Test::Unit::TestCase
   def test_headlines_nested
     # load page
     page = Wiki::Api::Page.new(name: 'program')
+    assert(page.exists?, 'expected existing page')
+    assert(page.json_response_body.nil?, 'no API call so no response json')
     assert(page.is_a?(Wiki::Api::Page), 'expected Page object')
     headline = page.root_headline
     assert(headline.is_a?(Wiki::Api::PageHeadline), 'expected PageHeadline object')

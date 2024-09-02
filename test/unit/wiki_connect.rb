@@ -31,6 +31,11 @@ class WikiConnect < Test::Unit::TestCase
   def test_page_get
     c = Wiki::Api::Connect.new
     c.page('Wiktionary:Welcome,_newcomers')
+    assert(c.json_response_body[:parse].keys.sort == %i[
+      categories displaytitle externallinks images iwlinks langlinks links
+      pageid parsewarnings properties revid sections templates text title
+    ],
+           'unexpected keys returned by API')
   rescue Exception => e
     assert(false, "expected valid page #{e.message}")
   end

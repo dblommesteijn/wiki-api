@@ -35,7 +35,7 @@ module Wiki
         nested_headlines.each do |headline_name, value|
           level = LEVEL.index(value.first.first.previous.name)
           self.headlines[headline_name] =
-            PageHeadline.new(parent: self, name: headline_name, headlines:, level:)
+            PageHeadline.new(parent: self, name: headline_name, headlines: headlines, level: level)
         end
       end
 
@@ -81,7 +81,7 @@ module Wiki
       end
 
       def to_hash
-        ret = { name:, headlines: [], type: }
+        ret = { name: name, headlines: [], type: type }
         self.headlines.each_value do |headline|
           ret[:headlines] << headline.to_hash
         end

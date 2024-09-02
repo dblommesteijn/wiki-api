@@ -7,7 +7,7 @@ require 'nokogiri'
 module Wiki
   module Api
     class Connect
-      attr_accessor :uri, :api_path, :api_options, :http, :request, :response, :html, :parsed, :file
+      attr_accessor :uri, :api_path, :api_options, :http, :request, :response, :html, :parsed, :file, :json_response_body
 
       def initialize(options = {})
         @@config ||= {}
@@ -59,7 +59,8 @@ module Wiki
         json = JSON.parse(response.body, { symbolize_names: true })
         raise(json[:error][:code]) unless valid?(json, response)
 
-        self.html = json[:parse][:text]
+        self.json_response_body = json
+        self.html = json.dig(:parse, :text)
         self.parsed = Nokogiri::HTML(html[:*])
       end
 
